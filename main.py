@@ -7,8 +7,8 @@ import numpy as np
 size = (400, 520)
 
 # capturing video
-# video_path = os.path.join("src", "hand.mp4")
-video_path = 0
+video_path = os.path.join("src", "hand.mp4")
+# video_path = 0
 
 if video_path == 0:
     size = (640, 480)
@@ -29,7 +29,10 @@ def capture_frame(cap, size):
 
 ret, frame1 = capture_frame(cap, size)
 ret, frame2 = capture_frame(cap, size)
+
+frame_num = 2
 while cap.isOpened():
+    seconds = round((frame_num / fps), 1)
 
     # Difference between frame1(image) and frame2(image)
     diff = cv2.absdiff(frame1, frame2)
@@ -54,7 +57,8 @@ while cap.isOpened():
         (x, y, w, h) = cv2.boundingRect(contour)
         if cv2.contourArea(contour) < 2000:
             continue
-        cv2.rectangle(frame1, (x, y), (x + w, y + h), (0, 255, 255), 2)
+        cv2.rectangle(frame1, (x, y), (x + w, y + h), (0, 255, 20), 2)
+        print("Movement detected at: " + str(seconds) + " seconds.")
 
     drawn_thresh = cv2.add(frame1, frame1, mask=thresh)
     # Display original frame
@@ -71,6 +75,8 @@ while cap.isOpened():
 
     # Read new frame2
     ret, frame2 = capture_frame(cap, size)
+    frame_num += 1
+
     if not ret:
         break
 
