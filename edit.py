@@ -19,17 +19,21 @@ clip.write_videofile("myHolidays_edited.mp4")
 
 from moviepy.editor import *
 
-clips = [
-    VideoFileClip(os.path.join("src", "example_01.mp4")),
-    VideoFileClip(os.path.join("src", "example_02.mp4")),
-    VideoFileClip(os.path.join("src", "example_03.mp4")),
-]
+clips = []
+for r, d, f in os.walk("src"):
+    for file in f:
+
+        video_path = os.path.join(r, file)
+
+        if video_path.endswith(".mp4"):
+            print(video_path)
+
+            vid = VideoFileClip(video_path)
+            vid = vid.resize((460, 720))
+            clips.append(vid)
 
 
-fade_duration = 0  # 1-second fade-in for each clip
-clips = [clip.crossfadein(fade_duration) for clip in clips]
-
-final_clip = concatenate_videoclips(clips, padding=-fade_duration)
+final_clip = concatenate_videoclips(clips)
 
 # You can write any format, in any quality.
 final_clip.write_videofile("final.mp4")
