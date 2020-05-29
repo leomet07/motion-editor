@@ -7,8 +7,8 @@ import numpy as np
 size = (400, 520)
 
 # capturing video
-video_path = os.path.join("src", "hand.mp4")
-# video_path = 0
+#video_path = os.path.join("src", "hand.mp4")
+video_path = 0
 
 if video_path == 0:
     size = (640, 480)
