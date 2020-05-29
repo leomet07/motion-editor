@@ -1,39 +1,35 @@
-"""
-from moviepy.editor import *
+
 import os
+import sys
 
-# Load myHolidays.mp4 and select the subclip 00:00:50 - 00:00:60
-clip = VideoFileClip(os.path.join("src", "hand.mp4"))
-
-# Reduce the audio volume (volume x 0.8)
-clip = clip.volumex(0.8)
-
-
-
-# Overlay the text clip on the first video clip
-
-
-# Write the result to a file (many options available !)
-clip.write_videofile("myHolidays_edited.mp4")
-"""
-
-from moviepy.editor import *
+# cd src && ffmpeg -f concat -i files.txt -c copy output.mkv && cd ..
 
 clips = []
-for r, d, f in os.walk("src"):
-    for file in f:
 
-        video_path = os.path.join(r, file)
+output_file = "output.mkv"
+path_output_file = os.path.join("src", output_file)
 
-        if video_path.endswith(".mp4"):
-            print(video_path)
-
-            vid = VideoFileClip(video_path)
-            vid = vid.resize((460, 720))
-            clips.append(vid)
+if os.path.exists(path_output_file):
+    os.remove(path_output_file)
 
 
-final_clip = concatenate_videoclips(clips)
+with open(os.path.join("src", "files.txt"), "w") as text_file:
+    for r, d, f in os.walk("src"):
+        for file in f:
 
-# You can write any format, in any quality.
-final_clip.write_videofile("final.mp4")
+            video_path = os.path.join(r, file)
+
+            if video_path.endswith(".mkv") and not (video_path.endswith(output_file)):
+
+                print(file)
+
+                text_file.write("file '" + file + "' \n")
+
+
+print("\n\n**********Compiling....********************\n\n")
+# after run, compile
+os.system("cd src && ffmpeg -f concat -i files.txt -c copy output.mkv && cd ..")
+print("\n\n**********Done!********************\n\n")
+
+
+
