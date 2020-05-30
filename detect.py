@@ -7,7 +7,7 @@ import numpy as np
 size = (400, 520)
 
 # capturing video
-#video_path = os.path.join("src", "hand.mp4")
+# video_path = os.path.join("src", "hand.mp4")
 video_path = 0
 
 if video_path == 0:
@@ -67,7 +67,7 @@ while cap.isOpened():
     # Display Diffrenciate Frame
     # cv2.imshow("Difference Frame", thresh)
     both = np.concatenate((frame1, drawn_thresh), axis=0)
-
+    both = cv2.resize(both, (0, 0), fx=0.8, fy=0.8)
     cv2.imshow("Detected", both)
 
     # Assign frame2(image) to frame1(image)
@@ -81,7 +81,7 @@ while cap.isOpened():
         break
 
     # Press 'esc' for quit
-    key = cv2.waitKey(20)
+    key = cv2.waitKey(1)
     if key == ord("q") or key == 27:
         break
 
