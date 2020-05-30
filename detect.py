@@ -31,6 +31,14 @@ ret, frame1 = capture_frame(cap, size)
 ret, frame2 = capture_frame(cap, size)
 
 frame_num = 2
+
+past_detect = False
+
+start_time = 0
+
+in_move = False
+
+history = [0]
 while cap.isOpened():
     seconds = round((frame_num / fps), 1)
 
@@ -52,13 +60,44 @@ while cap.isOpened():
         dilated, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE
     )
 
+    elapsed_time = seconds - start_time
+    # print(elapsed_time)
     # making rectangle around moving object
+    detected = False
+
     for contour in contours:
         (x, y, w, h) = cv2.boundingRect(contour)
         if cv2.contourArea(contour) < 2000:
             continue
         cv2.rectangle(frame1, (x, y), (x + w, y + h), (0, 255, 20), 2)
-        print("Movement detected at: " + str(seconds) + " seconds.")
+        # print("Movement detected at: " + str(seconds) + " seconds.")
+        detected = True
+
+        if not (past_detect):
+
+            if elapsed_time > 2:
+
+                if not (in_move):
+                    in_move = True
+                    start_time = seconds
+
+                    print("Movement started at: " + str(seconds) + " seconds.")
+
+                    # calculate early so no instant shutoff
+                    elapsed_time = seconds - start_time
+    # no detection in history
+    if not (True in history):
+        if in_move:
+            if elapsed_time > 0.5:
+                print("Movement ended at: " + str(seconds) + " seconds.")
+                in_move = False
+    history.append(detected)
+    if len(history) > 7:
+        history.pop(0)
+
+    # print(history)
+
+    past_detect = detected
 
     drawn_thresh = cv2.add(frame1, frame1, mask=thresh)
     # Display original frame
