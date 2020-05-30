@@ -37,7 +37,7 @@ past_detect = False
 start_time = 0
 
 in_move = False
-
+first_run = True
 history = [0]
 while cap.isOpened():
     seconds = round((frame_num / fps), 1)
@@ -75,7 +75,7 @@ while cap.isOpened():
 
         if not (past_detect):
 
-            if elapsed_time > 2:
+            if elapsed_time > 5 or (first_run and elapsed_time > 0.5):
 
                 if not (in_move):
                     in_move = True
@@ -85,6 +85,8 @@ while cap.isOpened():
 
                     # calculate early so no instant shutoff
                     elapsed_time = seconds - start_time
+
+                    first_run = False
     # no detection in history
     if not (True in history):
         if in_move:
