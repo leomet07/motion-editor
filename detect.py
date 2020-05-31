@@ -102,7 +102,7 @@ def detect(name, show=True):
                     print("Movement ended at: " + str(seconds) + " seconds.")
                     in_move = False
 
-                    times.append({"start": start_time, "end": elapsed_time})
+                    times.append({"start": start_time, "duration": elapsed_time})
 
                     # to quit after first
                     # break

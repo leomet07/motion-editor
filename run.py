@@ -5,35 +5,53 @@ import edit
 
 if os.path.exists("out"):
     shutil.rmtree("out")
-    os.mkdir("out")
+os.mkdir("out")
 
-for r, d, f in os.walk("src"):
-    for file in f:
+# then combine links
+all_output_file = "output.mkv"
+path_all_output_file = os.path.join("out", all_output_file)
 
-        video_path = os.path.join(r, file)
+if os.path.exists(path_all_output_file):
+    os.remove(path_all_output_file)
 
-        out_path_global = os.path.join("out", file)
+with open(os.path.join("out", "files.txt"), "w") as text_file:
+    for r, d, f in os.walk("src"):
+        for file in f:
 
-        if video_path.endswith(".mkv"):
+            video_path = os.path.join(r, file)
 
-            print(file)
+            out_path_global = os.path.join("out", file)
 
-            # times = detect(0)
-            times = detect(video_path, False)
-            print(times)
+            if video_path.endswith(".mkv"):
 
-            count = 1
-            for time in times:
+                print(file)
 
-                start = time["start"]
-                end = time["end"]
+                # times = detect(0)
+                times = detect(video_path, False)
+                print(times)
 
-                output_file = out_path_global.replace(".", "_" + str(count) + ".")
+                count = 1
+                for time in times:
 
-                edit.trim_vid(
-                    video_path, output_file, str(start), str(end),
-                )
+                    start = time["start"]
+                    duration = time["duration"]
 
-                print("Start: " + str(start))
+                    output_file = out_path_global.replace(".", "_" + str(count) + ".")
 
-                count += 1
+                    edit.trim_vid(
+                        video_path, output_file, str(start), str(duration),
+                    )
+
+                    if output_file.endswith(".mkv") and not (
+                        output_file.endswith(all_output_file)
+                    ):
+
+                        print(output_file)
+
+                        text_file.write(
+                            "file '" + output_file[len("out") + 1 :] + "' \n"
+                        )
+
+                    count += 1
+
+edit.compile("files.txt", "out")
