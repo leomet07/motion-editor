@@ -42,4 +42,4 @@ def trim_vid(input_file, output_file, start_time, duration):
     os.system("ffmpeg -i " +  str(input_file) + " -ss " + str(start_time) + " -t " + str(duration) + " -c copy " + str(output_file))
 
 
-trim_vid("run.mkv", "out.mkv" , "00:00:05", "00:00:05")
+#trim_vid("run.mkv", "out.mkv" , "00:00:05", "00:00:05")

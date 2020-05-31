@@ -4,32 +4,34 @@ import cv2
 import os
 import numpy as np
 
+# reading back-to-back frames(images) from video
+def capture_frame(cap, size):
+    ret, frame1 = cap.read()
+    if not ret:
+        return ret, None
 
-def detect(name):
-    size = (400, 520)
+    if size != None:
+        frame1 = cv2.resize(frame1, size)
+
+    return ret, frame1
+
+
+def detect(name, show=True):
+    size = None
 
     # capturing video
 
     # video_path = 0
-
     if name == 0:
         size = (640, 480)
         video_path = 0
     else:
-        video_path = os.path.join("src", name)
+        video_path = name
 
     cap = cv2.VideoCapture(video_path)
 
     fps = int(cap.get(cv2.CAP_PROP_FPS))
     print("The webcam fps is: " + str(fps))
-    # reading back-to-back frames(images) from video
-    def capture_frame(cap, size):
-        ret, frame1 = cap.read()
-        if not ret:
-            return ret, None
-        frame1 = cv2.resize(frame1, size)
-
-        return ret, frame1
 
     ret, frame1 = capture_frame(cap, size)
     ret, frame2 = capture_frame(cap, size)
@@ -81,7 +83,7 @@ def detect(name):
 
             if not (past_detect):
 
-                if elapsed_time > 5 or (first_run and elapsed_time > 0.5):
+                if elapsed_time > 15 or (first_run and elapsed_time > 0.5):
 
                     if not (in_move):
                         in_move = True
@@ -96,11 +98,16 @@ def detect(name):
         # no detection in history
         if not (True in history):
             if in_move:
-                if elapsed_time > 0.5:
+                if elapsed_time > 1:
                     print("Movement ended at: " + str(seconds) + " seconds.")
                     in_move = False
+
+                    times.append({"start": start_time, "end": elapsed_time})
+
+                    # to quit after first
+                    # break
         history.append(detected)
-        if len(history) > 7:
+        if len(history) > 20:
             history.pop(0)
 
         # print(history)
@@ -114,8 +121,10 @@ def detect(name):
         # Display Diffrenciate Frame
         # cv2.imshow("Difference Frame", thresh)
         both = np.concatenate((frame1, drawn_thresh), axis=0)
-        both = cv2.resize(both, (0, 0), fx=0.8, fy=0.8)
-        cv2.imshow("Detected", both)
+
+        both = cv2.resize(both, (0, 0), fx=0.7, fy=0.7)
+        if show:
+            cv2.imshow("Detected", both)
 
         # Assign frame2(image) to frame1(image)
         frame1 = frame2
@@ -127,10 +136,11 @@ def detect(name):
         if not ret:
             break
 
-        # Press 'esc' for quit
-        key = cv2.waitKey(1)
-        if key == ord("q") or key == 27:
-            break
+        if show:
+            # Press 'esc' for quit
+            key = cv2.waitKey(1)
+            if key == ord("q") or key == 27:
+                break
 
     # Release cap resource
     cap.release()
@@ -138,5 +148,4 @@ def detect(name):
     # Destroy all windows
     cv2.destroyAllWindows()
 
-
-detect(0)
+    return times
